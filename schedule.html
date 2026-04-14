@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Planner — The Creator's Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #141416;
+    --surface2: #1a1a1e;
+    --border: #2a2a30;
+    --accent-gold: #e8c97e;
+    --accent-amber: #f5a623;
+    --accent-teal: #4ecdc4;
+    --accent-coral: #ff6b6b;
+    --accent-lavender: #b8a9f5;
+    --accent-sage: #7ec8a4;
+    --text-primary: #f0ede8;
+    --text-secondary: #888896;
+    --text-dim: #555560;
+
+    /* Block colors */
+    --morning: #e8c97e;
+    --engineering: #4ecdc4;
+    --break: #3a3a42;
+    --creative: #f5a623;
+    --evening: #b8a9f5;
+    --wind: #7ec8a4;
+    --sleep: #2e2e38;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    position: relative;
+  }
+
+  .header::before {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--accent-gold));
+    margin: 0 auto 24px;
+  }
+
+  .header .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--accent-gold);
+  }
+
+  .header .subtitle {
+    margin-top: 16px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .header .tagline {
+    margin-top: 10px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--text-dim);
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* WEEKLY GRID */
+  .week-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    gap: 2px;
+    max-width: 1400px;
+    margin: 0 auto;
+    background: var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.6);
+  }
+
+  .day-header {
+    background: var(--surface2);
+    padding: 16px 8px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .day-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+
+  .day-sub {
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  .time-col {
+    background: var(--surface);
+  }
+
+  .time-col .day-header {
+    background: var(--surface);
+  }
+
+  .time-label {
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    min-height: 44px;
+  }
+
+  .day-col {
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 2px;
+  }
+
+  /* BLOCKS */
+  .block {
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 40px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: default;
+  }
+
+  .block:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    z-index: 2;
+  }
+
+  .block::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .block-time {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    margin-bottom: 3px;
+  }
+
+  .block-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.05em;
+  }
+
+  .block-note {
+    font-size: 8px;
+    opacity: 0.65;
+    margin-top: 2px;
+    letter-spacing: 0.03em;
+    font-style: italic;
+  }
+
+  /* Block types */
+  .b-morning { background: rgba(232,201,126,0.12); border: 1px solid rgba(232,201,126,0.2); }
+  .b-morning::before { background: var(--morning); }
+  .b-morning .block-title { color: var(--morning); }
+
+  .b-engineering { background: rgba(78,205,196,0.1); border: 1px solid rgba(78,205,196,0.18); }
+  .b-engineering::before { background: var(--engineering); }
+  .b-engineering .block-title { color: var(--engineering); }
+
+  .b-creative { background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.18); }
+  .b-creative::before { background: var(--creative); }
+  .b-creative .block-title { color: var(--creative); }
+
+  .b-break { background: rgba(42,42,48,0.8); border: 1px solid rgba(80,80,90,0.3); }
+  .b-break::before { background: var(--text-dim); }
+  .b-break .block-title { color: var(--text-secondary); }
+
+  .b-evening { background: rgba(184,169,245,0.1); border: 1px solid rgba(184,169,245,0.18); }
+  .b-evening::before { background: var(--evening); }
+  .b-evening .block-title { color: var(--evening); }
+
+  .b-wind { background: rgba(126,200,164,0.1); border: 1px solid rgba(126,200,164,0.18); }
+  .b-wind::before { background: var(--wind); }
+  .b-wind .block-title { color: var(--wind); }
+
+  .b-sleep { background: rgba(30,30,40,0.6); border: 1px solid rgba(50,50,60,0.3); }
+  .b-sleep::before { background: #444450; }
+  .b-sleep .block-title { color: var(--text-dim); }
+
+  .b-flex { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.15); }
+  .b-flex::before { background: var(--accent-coral); }
+  .b-flex .block-title { color: var(--accent-coral); }
+
+  /* PILLARS */
+  .pillars {
+    max-width: 1400px;
+    margin: 48px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .pillar-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pillar-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .pillar-card.p1::after { background: linear-gradient(to right, var(--morning), transparent); }
+  .pillar-card.p2::after { background: linear-gradient(to right, var(--engineering), transparent); }
+  .pillar-card.p3::after { background: linear-gradient(to right, var(--creative), transparent); }
+
+  .pillar-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1;
+    opacity: 0.07;
+    position: absolute;
+    top: 12px;
+    right: 20px;
+  }
+
+  .pillar-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .pillar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .pillar-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* MANTRAS */
+  .mantras {
+    max-width: 1400px;
+    margin: 40px auto 0;
+    display: flex;
+    gap: 2px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .mantra {
+    flex: 1;
+    background: var(--surface2);
+    padding: 20px 16px;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    transition: color 0.2s;
+  }
+
+  .mantra:hover { color: var(--accent-gold); }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .footer p {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* SCROLL HINT */
+  .scroll-hint {
+    text-align: center;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 900px) {
+    .week-grid {
+      grid-template-columns: 60px repeat(7, 1fr);
+      font-size: 9px;
+    }
+    .block-title { font-size: 8px; }
+    .block-time, .block-note { display: none; }
+    body { padding: 20px 10px; }
+  }
+
+  @media print {
+    body { background: white; color: #111; padding: 10px; }
+    .week-grid { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="eyebrow">6-Month Mastery Blueprint · 2025</div>
+  <h1>The <em>Creator's</em><br>Weekly Blueprint</h1>
+  <div class="subtitle">Software Engineering · DJing · Music Production</div>
+  <div class="tagline">"Discipline is the bridge between goals and accomplishment."</div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--morning)"></div> Morning Ritual</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--engineering)"></div> Software Engineering</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--creative)"></div> Creative: DJ / Music</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--evening)"></div> Evening Focus</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--wind)"></div> Wind-Down</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent-coral)"></div> Flex / Rest</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--text-dim)"></div> Break / Transition</div>
+</div>
+
+<div class="scroll-hint">← scroll to view full week →</div>
+
+<!-- MAIN GRID -->
+<div style="overflow-x:auto;">
+<div class="week-grid">
+
+  <!-- Header row -->
+  <div class="day-header time-col"><div class="day-name" style="font-size:9px;color:var(--text-dim)">TIME</div></div>
+  <div class="day-header"><div class="day-name">MON</div><div class="day-sub">Build</div></div>
+  <div class="day-header"><div class="day-name">TUE</div><div class="day-sub">Create</div></div>
+  <div class="day-header"><div class="day-name">WED</div><div class="day-sub">Deepen</div></div>
+  <div class="day-header"><div class="day-name">THU</div><div class="day-sub">Produce</div></div>
+  <div class="day-header"><div class="day-name">FRI</div><div class="day-sub">Ship</div></div>
+  <div class="day-header"><div class="day-name">SAT</div><div class="day-sub">Flow</div></div>
+  <div class="day-header"><div class="day-name">SUN</div><div class="day-sub">Restore</div></div>
+
+  <!-- 6:30 AM -->
+  <div class="time-label">6:30</div>
+  <!-- MON-FRI same morning routine -->
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">6:30–7:00</div>
+      <div class="block-title">Wake Up + Hydrate</div>
+      <div class="block-note">Alarm off, phone away, water first</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">6:30–7:00</div>
+      <div class="block-title">Wake Up + Hydrate</div>
+      <div class="block-note">Alarm off, phone away, water first</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">6:30–7:00</div>
+      <div class="block-title">Wake Up + Hydrate</div>
+      <div class="block-note">Alarm off, phone away, water first</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">6:30–7:00</div>
+      <div class="block-title">Wake Up + Hydrate</div>
+      <div class="block-note">Alarm off, phone away, water first</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">6:30–7:00</div>
+      <div class="block-title">Wake Up + Hydrate</div>
+      <div class="block-note">Alarm off, phone away, water first</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning" style="background:rgba(232,201,126,0.07)">
+      <div class="block-time">6:30–7:30</div>
+      <div class="block-title">Slow Wake-Up</div>
+      <div class="block-note">No alarm. Rest, stretch, ease in</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning" style="background:rgba(232,201,126,0.07)">
+      <div class="block-time">6:30–8:00</div>
+      <div class="block-title">Rest Morning</div>
+      <div class="block-note">Full recovery. Sleep in if needed</div>
+    </div>
+  </div>
+
+  <!-- 7:00 AM -->
+  <div class="time-label">7:00</div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:00–7:45</div>
+      <div class="block-title">Exercise + Hygiene</div>
+      <div class="block-note">30 min movement · shower · dress</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:00–7:45</div>
+      <div class="block-title">Exercise + Hygiene</div>
+      <div class="block-note">Yoga / jog / calisthenics</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:00–7:45</div>
+      <div class="block-title">Exercise + Hygiene</div>
+      <div class="block-note">Energize the body</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:00–7:45</div>
+      <div class="block-title">Exercise + Hygiene</div>
+      <div class="block-note">Active recovery walk welcome</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:00–7:45</div>
+      <div class="block-title">Exercise + Hygiene</div>
+      <div class="block-note">End-of-week energy reset</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning" style="background:rgba(232,201,126,0.07)">
+      <div class="block-time">7:30–8:30</div>
+      <div class="block-title">Long Walk / Run</div>
+      <div class="block-note">Outdoor movement + fresh air</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-sleep">
+      <div class="block-time">6:30–9:00</div>
+      <div class="block-title">Rest / Sleep In</div>
+      <div class="block-note">Full recovery day</div>
+    </div>
+  </div>
+
+  <!-- 7:45 AM -->
+  <div class="time-label">7:45</div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:45–8:30</div>
+      <div class="block-title">Breakfast + Planning</div>
+      <div class="block-note">Nourish · journal 3 priorities · no social media</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:45–8:30</div>
+      <div class="block-title">Breakfast + Planning</div>
+      <div class="block-note">Review weekly goals</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:45–8:30</div>
+      <div class="block-title">Breakfast + Planning</div>
+      <div class="block-note">Mid-week check-in journal</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:45–8:30</div>
+      <div class="block-title">Breakfast + Planning</div>
+      <div class="block-note">Set creative intentions for the day</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">7:45–8:30</div>
+      <div class="block-title">Breakfast + Planning</div>
+      <div class="block-note">Weekly reflection + next week preview</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning" style="background:rgba(232,201,126,0.07)">
+      <div class="block-time">8:30–9:30</div>
+      <div class="block-title">Breakfast + Chill</div>
+      <div class="block-note">Eat slowly, no rush</div>
+    </div>
+  </div>
+  <div class="day-col"></div>
+
+  <!-- 8:30 AM -->
+  <div class="time-label">8:30</div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">8:30–9:00</div>
+      <div class="block-title">Music Listening</div>
+      <div class="block-note">Deep listening for inspiration · no multitasking</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">8:30–9:00</div>
+      <div class="block-title">Music Listening</div>
+      <div class="block-note">Analyse structure, mix, sound design</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">8:30–9:00</div>
+      <div class="block-title">Music Listening</div>
+      <div class="block-note">Focus: genre study session</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">8:30–9:00</div>
+      <div class="block-title">Music Listening</div>
+      <div class="block-note">Reference tracks for production</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning">
+      <div class="block-time">8:30–9:00</div>
+      <div class="block-title">Music Listening</div>
+      <div class="block-note">Free listening — pure enjoyment</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="background:rgba(245,166,35,0.07)">
+      <div class="block-time">9:30–11:00</div>
+      <div class="block-title">DJ Practice</div>
+      <div class="block-note">Mix recording · transitions · flow</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-morning" style="background:rgba(232,201,126,0.07); margin-top:8px">
+      <div class="block-time">9:00–10:00</div>
+      <div class="block-title">Breakfast + Light Read</div>
+      <div class="block-note">Slow start · nourish</div>
+    </div>
+  </div>
+
+  <!-- 9:00 AM — DEEP WORK -->
+  <div class="time-label" style="color:var(--engineering);font-weight:500">9:00</div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:100px">
+      <div class="block-time">9:00–10:30</div>
+      <div class="block-title">🖥 Deep Work — Software Eng I</div>
+      <div class="block-note">Core concepts · no distractions · full focus</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:100px">
+      <div class="block-time">9:00–10:30</div>
+      <div class="block-title">🖥 Deep Work — Software Eng I</div>
+      <div class="block-note">Build on Monday's concepts</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:100px">
+      <div class="block-time">9:00–10:30</div>
+      <div class="block-title">🖥 Deep Work — Software Eng I</div>
+      <div class="block-note">Mid-week: tackle hardest problem first</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:100px">
+      <div class="block-time">9:00–10:30</div>
+      <div class="block-title">🖥 Deep Work — Software Eng I</div>
+      <div class="block-note">Project build · apply this week's learning</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:100px">
+      <div class="block-time">9:00–10:30</div>
+      <div class="block-title">🖥 Review + Build — Software</div>
+      <div class="block-note">Consolidate the week · mini-project sprint</div>
+    </div>
+  </div>
+  <div class="day-col"></div>
+  <div class="day-col">
+    <div class="block b-flex" style="min-height:80px; margin-top:8px">
+      <div class="block-time">10:00–12:00</div>
+      <div class="block-title">🎯 Flex / Personal Projects</div>
+      <div class="block-note">Portfolio, blog, YouTube editing, admin</div>
+    </div>
+  </div>
+
+  <!-- 10:30 AM -->
+  <div class="time-label">10:30</div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">10:30–10:45</div>
+      <div class="block-title">Break · Stretch + Water</div>
+      <div class="block-note">Step away from screen, breathe</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">10:30–10:45</div>
+      <div class="block-title">Break · Stretch + Water</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">10:30–10:45</div>
+      <div class="block-title">Break · Stretch + Water</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">10:30–10:45</div>
+      <div class="block-title">Break · Stretch + Water</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">10:30–10:45</div>
+      <div class="block-title">Break · Stretch + Water</div>
+    </div>
+  </div>
+  <div class="day-col"></div>
+  <div class="day-col"></div>
+
+  <!-- 10:45 AM -->
+  <div class="time-label">10:45</div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:80px">
+      <div class="block-time">10:45–12:00</div>
+      <div class="block-title">🖥 Deep Work — Software Eng II</div>
+      <div class="block-note">Code projects · problem solving · build</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:80px">
+      <div class="block-time">10:45–12:00</div>
+      <div class="block-title">🖥 Deep Work — Software Eng II</div>
+      <div class="block-note">Apply concepts · experiment without tutorials</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:80px">
+      <div class="block-time">10:45–12:00</div>
+      <div class="block-title">🖥 Deep Work — Software Eng II</div>
+      <div class="block-note">Debugging · documentation · commit</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:80px">
+      <div class="block-time">10:45–12:00</div>
+      <div class="block-title">🖥 Deep Work — Software Eng II</div>
+      <div class="block-note">Portfolio project work</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-engineering" style="min-height:80px">
+      <div class="block-time">10:45–12:00</div>
+      <div class="block-title">🖥 Weekly Code Review</div>
+      <div class="block-note">GitHub push · review week's progress</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="background:rgba(245,166,35,0.07); min-height:80px">
+      <div class="block-time">11:00–12:30</div>
+      <div class="block-title">🎛 Music Production</div>
+      <div class="block-note">Sound design · sample flipping · loop building</div>
+    </div>
+  </div>
+  <div class="day-col"></div>
+
+  <!-- LUNCH -->
+  <div class="time-label">12:00</div>
+  <div class="day-col">
+    <div class="block b-break" style="min-height:60px">
+      <div class="block-time">12:00–1:00</div>
+      <div class="block-title">🍽 Lunch + Full Break</div>
+      <div class="block-note">Eat well. Walk. Zero screens if possible.</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break" style="min-height:60px">
+      <div class="block-time">12:00–1:00</div>
+      <div class="block-title">🍽 Lunch + Full Break</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break" style="min-height:60px">
+      <div class="block-time">12:00–1:00</div>
+      <div class="block-title">🍽 Lunch + Full Break</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break" style="min-height:60px">
+      <div class="block-time">12:00–1:00</div>
+      <div class="block-title">🍽 Lunch + Full Break</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break" style="min-height:60px">
+      <div class="block-time">12:00–1:00</div>
+      <div class="block-title">🍽 Lunch + Full Break</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break" style="min-height:60px">
+      <div class="block-time">12:30–2:00</div>
+      <div class="block-title">🍽 Lunch + Rest</div>
+      <div class="block-note">Guilt-free downtime</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-flex" style="min-height:100px">
+      <div class="block-time">12:00–3:00</div>
+      <div class="block-title">Social / Errands / Family</div>
+      <div class="block-note">Connection, errands, life admin</div>
+    </div>
+  </div>
+
+  <!-- 1:00 PM -->
+  <div class="time-label">1:00</div>
+  <div class="day-col">
+    <div class="block b-flex">
+      <div class="block-time">1:00–2:00</div>
+      <div class="block-title">Flex Hour</div>
+      <div class="block-note">Admin · errands · Twitter (max 10 min) · nap</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-flex">
+      <div class="block-time">1:00–2:00</div>
+      <div class="block-title">Flex Hour</div>
+      <div class="block-note">Admin · relax · light reading</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-flex">
+      <div class="block-time">1:00–2:00</div>
+      <div class="block-title">Flex Hour</div>
+      <div class="block-note">Rest · optional power nap (20 min)</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-flex">
+      <div class="block-time">1:00–2:00</div>
+      <div class="block-title">Flex Hour</div>
+      <div class="block-note">Music crate digging · inspiration</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-flex">
+      <div class="block-time">1:00–2:00</div>
+      <div class="block-title">Flex Hour</div>
+      <div class="block-note">Weekly review log · journal</div>
+    </div>
+  </div>
+  <div class="day-col"></div>
+  <div class="day-col"></div>
+
+  <!-- 2:00 PM — CREATIVE BLOCK -->
+  <div class="time-label" style="color:var(--creative);font-weight:500">2:00</div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:100px">
+      <div class="block-time">2:00–3:30</div>
+      <div class="block-title">🎚 DJ Practice</div>
+      <div class="block-note">Mixing · beatmatching · transitions · record sets</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:100px">
+      <div class="block-time">2:00–3:30</div>
+      <div class="block-title">🎛 Music Production</div>
+      <div class="block-note">Beat making · arrange · sound design</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:100px">
+      <div class="block-time">2:00–3:30</div>
+      <div class="block-title">🎚 DJ Practice</div>
+      <div class="block-note">Genre deep dive · set building</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:100px">
+      <div class="block-time">2:00–3:30</div>
+      <div class="block-title">🎛 Music Production</div>
+      <div class="block-note">Full session: from idea to rough track</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:100px">
+      <div class="block-time">2:00–3:30</div>
+      <div class="block-title">🎚 Record Mix / Session</div>
+      <div class="block-note">Full DJ set recording for YouTube</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:100px">
+      <div class="block-time">2:00–4:00</div>
+      <div class="block-title">🎛 Deep Production Session</div>
+      <div class="block-note">Extended creative time · finish tracks</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-flex" style="min-height:100px">
+      <div class="block-time">3:00–5:00</div>
+      <div class="block-title">Nature / Rest / Explore</div>
+      <div class="block-note">Disconnect · recharge creative energy</div>
+    </div>
+  </div>
+
+  <!-- 3:30 PM -->
+  <div class="time-label">3:30</div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">3:30–3:45</div>
+      <div class="block-title">Break · Snack + Rest</div>
+      <div class="block-note">Ear rest is productive</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">3:30–3:45</div>
+      <div class="block-title">Break · Snack + Rest</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">3:30–3:45</div>
+      <div class="block-title">Break · Snack + Rest</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">3:30–3:45</div>
+      <div class="block-title">Break · Snack + Rest</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-break">
+      <div class="block-time">3:30–3:45</div>
+      <div class="block-title">Break · Snack + Rest</div>
+    </div>
+  </div>
+  <div class="day-col"></div>
+  <div class="day-col"></div>
+
+  <!-- 3:45 PM -->
+  <div class="time-label">3:45</div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:80px">
+      <div class="block-time">3:45–6:00</div>
+      <div class="block-title">🎛 Music Production</div>
+      <div class="block-note">DAW session · finish loops · mixing basics</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:80px">
+      <div class="block-time">3:45–6:00</div>
+      <div class="block-title">🎚 DJ Practice + Explore</div>
+      <div class="block-note">Crate dig · build new set playlists</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:80px">
+      <div class="block-time">3:45–6:00</div>
+      <div class="block-title">🎛 Music Production</div>
+      <div class="block-note">Arrangements · automation · EQ/FX</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:80px">
+      <div class="block-time">3:45–6:00</div>
+      <div class="block-title">🎚 DJ Session</div>
+      <div class="block-note">Record set · review and critique</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-creative" style="min-height:80px">
+      <div class="block-time">3:45–6:00</div>
+      <div class="block-title">🎛 Track Completion</div>
+      <div class="block-note">Polish and prep track for sharing</div>
+    </div>
+  </div>
+  <div class="day-col"></div>
+  <div class="day-col">
+    <div class="block b-flex" style="min-height:60px">
+      <div class="block-time">5:00–6:30</div>
+      <div class="block-title">Dinner + Social Time</div>
+      <div class="block-note">Family, friends, or solo — no guilt</div>
+    </div>
+  </div>
+
+  <!-- 6:00 PM — EVENING BLOCK -->
+  <div class="time-label" style="color:var(--evening);font-weight:500">6:00</div>
+  <div class="day-col">
+    <div class="block b-evening">
+      <div class="block-time">6:00–7:00</div>
+      <div class="block-title">🍽 Dinner + Debrief</div>
+      <div class="block-note">Eat. Log what you built today. Gratitude.</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening">
+      <div class="block-time">6:00–7:00</div>
+      <div class="block-title">🍽 Dinner + Debrief</div>
+      <div class="block-note">Review creative session output</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening">
+      <div class="block-time">6:00–7:00</div>
+      <div class="block-title">🍽 Dinner + Debrief</div>
+      <div class="block-note">Mid-week reset · how's the energy?</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening">
+      <div class="block-time">6:00–7:00</div>
+      <div class="block-title">🍽 Dinner + Debrief</div>
+      <div class="block-note">Eat · relax · social if needed</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening">
+      <div class="block-time">6:00–7:00</div>
+      <div class="block-title">🍽 Dinner + Week Wrap</div>
+      <div class="block-note">Celebrate wins, note areas to improve</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening" style="background:rgba(184,169,245,0.07)">
+      <div class="block-time">6:00–7:00</div>
+      <div class="block-title">🍽 Dinner + Unwind</div>
+      <div class="block-note">Social time, no work talk</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening" style="background:rgba(184,169,245,0.07)">
+      <div class="block-time">6:30–7:30</div>
+      <div class="block-title">🍽 Dinner + Rest</div>
+      <div class="block-note">Full rest. You've earned it.</div>
+    </div>
+  </div>
+
+  <!-- 7:00 PM -->
+  <div class="time-label">7:00</div>
+  <div class="day-col">
+    <div class="block b-evening" style="min-height:80px">
+      <div class="block-time">7:00–8:30</div>
+      <div class="block-title">📚 Skill Review + Learning</div>
+      <div class="block-note">Re-read notes · watch 1 dev video · music theory</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening" style="min-height:80px">
+      <div class="block-time">7:00–8:30</div>
+      <div class="block-title">🎬 YouTube / Content Work</div>
+      <div class="block-note">Edit DJ mix · thumbnails · post scheduling</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening" style="min-height:80px">
+      <div class="block-time">7:00–8:30</div>
+      <div class="block-title">📚 Skill Review + Dev Blog</div>
+      <div class="block-note">Write what you learnt this week</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening" style="min-height:80px">
+      <div class="block-time">7:00–8:30</div>
+      <div class="block-title">🎬 YouTube / Content Work</div>
+      <div class="block-note">Video editing · mixing · upload prep</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-evening" style="min-height:80px">
+      <div class="block-time">7:00–8:00</div>
+      <div class="block-title">📊 Weekly Review</div>
+      <div class="block-note">Wins · losses · next week plan · 6-month tracker</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-flex" style="min-height:80px">
+      <div class="block-time">7:00–9:00</div>
+      <div class="block-title">Social / Fun / Hobbies</div>
+      <div class="block-note">Be a human. Rest is productive.</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-flex" style="min-height:80px">
+      <div class="block-time">7:30–9:00</div>
+      <div class="block-title">Reflection + Journaling</div>
+      <div class="block-note">Weekly gratitude · month-check</div>
+    </div>
+  </div>
+
+  <!-- 8:30 PM -->
+  <div class="time-label">8:30</div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">8:30–9:30</div>
+      <div class="block-title">🎧 Music Listening</div>
+      <div class="block-note">Intentional listening · study 1 track deeply</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">8:30–9:30</div>
+      <div class="block-title">🎧 Music Listening</div>
+      <div class="block-note">DJ inspiration · genre research</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">8:30–9:30</div>
+      <div class="block-title">🎧 Music Listening</div>
+      <div class="block-note">Replay your own mixes — critical ear</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">8:30–9:30</div>
+      <div class="block-title">🎧 Music Listening</div>
+      <div class="block-note">Study producers you admire</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">8:00–9:00</div>
+      <div class="block-title">🎧 Music Listening + Chill</div>
+      <div class="block-note">Reward listening — full enjoyment</div>
+    </div>
+  </div>
+  <div class="day-col"></div>
+  <div class="day-col"></div>
+
+  <!-- 9:30 PM — WIND DOWN -->
+  <div class="time-label" style="color:var(--wind);font-weight:500">9:30</div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">9:30–10:30</div>
+      <div class="block-title">📖 Read a Book</div>
+      <div class="block-note">Fiction, bio, or music/tech — not a screen</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">9:30–10:30</div>
+      <div class="block-title">📖 Read a Book</div>
+      <div class="block-note">Consistent nightly habit</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">9:30–10:30</div>
+      <div class="block-title">📖 Read a Book</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">9:30–10:30</div>
+      <div class="block-title">📖 Read a Book</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">9:00–10:00</div>
+      <div class="block-title">📖 Read + Reflect</div>
+      <div class="block-note">End the week with your mind, not a feed</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">9:00–10:00</div>
+      <div class="block-title">📖 Read a Book</div>
+      <div class="block-note">Longer read if inspired</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">9:00–10:00</div>
+      <div class="block-title">📖 Read a Book</div>
+      <div class="block-note">Calm the nervous system</div>
+    </div>
+  </div>
+
+  <!-- 10:30 PM -->
+  <div class="time-label">10:30</div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">10:30–11:00</div>
+      <div class="block-title">📱 TikTok (≤30 min)</div>
+      <div class="block-note">Creative inspiration only · set a timer</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">10:30–11:00</div>
+      <div class="block-title">📱 TikTok (≤30 min)</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">10:30–11:00</div>
+      <div class="block-title">📱 TikTok (≤30 min)</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">10:30–11:00</div>
+      <div class="block-title">📱 TikTok (≤30 min)</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">10:00–10:30</div>
+      <div class="block-title">📱 TikTok (≤30 min)</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">10:00–10:30</div>
+      <div class="block-title">📱 TikTok (≤30 min)</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-wind">
+      <div class="block-time">10:00–10:30</div>
+      <div class="block-title">📱 TikTok (≤30 min)</div>
+    </div>
+  </div>
+
+  <!-- 11:00 PM -->
+  <div class="time-label">11:00</div>
+  <div class="day-col">
+    <div class="block b-sleep">
+      <div class="block-time">11:00–11:30</div>
+      <div class="block-title">🌙 Sleep Prep</div>
+      <div class="block-note">Dim lights · no screens · journal 1 sentence</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-sleep">
+      <div class="block-time">11:00–11:30</div>
+      <div class="block-title">🌙 Sleep Prep</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-sleep">
+      <div class="block-time">11:00–11:30</div>
+      <div class="block-title">🌙 Sleep Prep</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-sleep">
+      <div class="block-time">11:00–11:30</div>
+      <div class="block-title">🌙 Sleep Prep</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-sleep">
+      <div class="block-time">10:30–11:00</div>
+      <div class="block-title">🌙 Sleep Prep</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-sleep">
+      <div class="block-time">10:30–11:00</div>
+      <div class="block-title">🌙 Sleep Prep</div>
+    </div>
+  </div>
+  <div class="day-col">
+    <div class="block b-sleep">
+      <div class="block-time">10:30–11:00</div>
+      <div class="block-title">🌙 Sleep Prep</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- NOTES SECTION -->
+<div class="pillars">
+  <div class="pillar-card p1">
+    <div class="pillar-num">01</div>
+    <div class="pillar-label" style="color:var(--morning)">Morning Ritual</div>
+    <div class="pillar-title">The Foundation</div>
+    <div class="pillar-desc">The 6:30–9:00 AM window is sacred. Phone stays off until 9:00 AM. Twitter is limited to 10 minutes maximum — use a timer. No social media during morning. Every morning begins with hydration, movement, and a written intention for the day.</div>
+  </div>
+  <div class="pillar-card p2">
+    <div class="pillar-num">02</div>
+    <div class="pillar-label" style="color:var(--engineering)">Software Engineering</div>
+    <div class="pillar-title">Deep Work</div>
+    <div class="pillar-desc">9:00 AM–12:00 PM is your coding block. Two Pomodoro-style sessions with a 15-min break at 10:30. By month 3: build projects from scratch. By month 6: code confidently without tutorials. No YouTube. No Stack Overflow copying — understand first.</div>
+  </div>
+  <div class="pillar-card p3">
+    <div class="pillar-num">03</div>
+    <div class="pillar-label" style="color:var(--creative)">Creative Flow</div>
+    <div class="pillar-title">DJ + Production</div>
+    <div class="pillar-desc">2:00–6:00 PM is pure creative energy. Alternate daily between DJing and music production. Record every session. By month 2: post your first mix. By month 6: consistent YouTube uploads + a produced EP in the works. Ear rest between sessions is essential.</div>
+  </div>
+</div>
+
+<!-- MANTRAS -->
+<div class="mantras">
+  <div class="mantra">"The routine is the art."</div>
+  <div class="mantra">"Show up before inspiration does."</div>
+  <div class="mantra">"Progress is the only metric that matters."</div>
+  <div class="mantra">"Rest is part of the work."</div>
+  <div class="mantra">"Consistency compounds."</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>The Creator's Blueprint · 6-Month Mastery Routine · Software · DJ · Production</p>
+  <p style="margin-top:8px">Twitter ≤ 10 min/day · TikTok ≤ 30 min before sleep · Music listening daily</p>
+</div>
+
+</body>
+</html>
